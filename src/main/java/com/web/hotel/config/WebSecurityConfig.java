@@ -1,6 +1,8 @@
 package com.web.hotel.config;
 
+import com.web.hotel.service.impl.CustomOAuth2UserDetail;
 import com.web.hotel.util.MyCustomSuccessHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,10 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-    @Bean
-    public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
-        return new DefaultOAuth2UserService();
-    }
+    @Autowired
+    private CustomOAuth2UserDetail customOAuth2UserDetail;
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
@@ -67,7 +67,7 @@ public class WebSecurityConfig {
                                 .tokenEndpoint(token
                                         -> token.accessTokenResponseClient(new DefaultAuthorizationCodeTokenResponseClient()))
                                 .userInfoEndpoint(userInfo
-                                        -> userInfo.userService(this.oauth2UserService()))
+                                        -> userInfo.userService(customOAuth2UserDetail))
                 )
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(
